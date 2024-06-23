@@ -24,6 +24,11 @@ namespace ProductMiddleware.Services
             var response = await _httpClient.GetStringAsync($"{_baseUrl}/{id}");
             return JsonSerializer.Deserialize<Product>(response);
         }
+        public async Task<IEnumerable<Product>> SearchProductsAsync(string query)
+        {
+            var products = await GetProductsAsync();
+            return products.Where(p => p.Title.Contains(query, StringComparison.OrdinalIgnoreCase));
+        }
 
         private class ProductsResponse
         {
