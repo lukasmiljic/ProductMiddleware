@@ -11,6 +11,7 @@ builder.Services.AddControllers()
 builder.Services.AddHttpClient<RestProductService>();
 builder.Services.AddScoped<IProductService, RestProductService>();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddResponseCaching();
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -40,6 +41,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseResponseCaching();
 
 app.MapControllers();
 

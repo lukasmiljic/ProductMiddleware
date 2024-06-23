@@ -63,6 +63,7 @@ namespace ProductMiddleware.Controllers
         [HttpGet("search")]
         [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)
         public async Task<ActionResult<IEnumerable<Product>>> SearchProducts([FromQuery] string query)
         {
             var filteredProducts = await _productService.SearchProductsAsync(query);
@@ -84,6 +85,7 @@ namespace ProductMiddleware.Controllers
         [HttpGet("filter")]
         [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ResponseCache(Duration = 60, VaryByQueryKeys = ["category", "minPrice", "maxPrice"], Location = ResponseCacheLocation.Any)]
         public async Task<ActionResult<IEnumerable<Product>>> FilterProducts([FromQuery] string category, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice)
         {
             var FilterProducts = await _productService.GetProductsByFilterAsync(category, minPrice, maxPrice);
