@@ -19,6 +19,12 @@ namespace ProductMiddleware.Services
             var productsResponse = JsonSerializer.Deserialize<ProductsResponse>(response);
             return productsResponse.Products;
         }
+        public async Task<Product> GetProductByIdAsync(int id)
+        {
+            var response = await _httpClient.GetStringAsync($"{_baseUrl}/{id}");
+            return JsonSerializer.Deserialize<Product>(response);
+        }
+
         private class ProductsResponse
         {
             public List<Product> Products { get; set; }
