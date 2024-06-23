@@ -3,7 +3,11 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+        {
+            options.SuppressMapClientErrors = true;
+        });
 builder.Services.AddHttpClient<RestProductService>();
 builder.Services.AddScoped<IProductService, RestProductService>();
 builder.Services.AddEndpointsApiExplorer();
