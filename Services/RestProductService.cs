@@ -29,7 +29,7 @@ namespace ProductMiddleware.Services
             var products = await GetProductsAsync();
             return products.Where(p => p.Title.Contains(query, StringComparison.OrdinalIgnoreCase));
         }
-        public async Task<IEnumerable<Product>> FilterProductsAsync(string category, decimal? minPrice, decimal? maxPrice)
+        public async Task<IEnumerable<Product>> GetProductsByFilterAsync(string category, decimal? minPrice, decimal? maxPrice)
         {
             var products = await GetProductsAsync();
             return products.Where(p =>
