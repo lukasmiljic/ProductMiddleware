@@ -7,22 +7,27 @@ namespace ProductMiddleware.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl = "https://dummyjson.com/products";
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public RestProductService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
         }
 
         public async Task<IEnumerable<Product>> GetProductsAsync()
         {
             var response = await _httpClient.GetStringAsync(_baseUrl);
-            var productsResponse = JsonSerializer.Deserialize<ProductsResponse>(response);
+            var productsResponse = JsonSerializer.Deserialize<ProductsResponse>(response, _jsonOptions);
             return productsResponse.Products;
         }
         public async Task<Product> GetProductByIdAsync(int id)
         {
             var response = await _httpClient.GetStringAsync($"{_baseUrl}/{id}");
-            return JsonSerializer.Deserialize<Product>(response);
+            return JsonSerializer.Deserialize<Product>(response, _jsonOptions);
         }
         public async Task<IEnumerable<Product>> SearchProductsAsync(string query)
         {
