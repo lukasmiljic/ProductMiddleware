@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductMiddleware.Models;
 using ProductMiddleware.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProductMiddleware.Controllers
 {
@@ -18,37 +19,58 @@ namespace ProductMiddleware.Controllers
         /// <summary>
         /// Retrieves all the products
         /// </summary>
+        /// <response code="200">Returns the list of products</response>
+        /// <response code="404">No products found</response>
         [HttpGet]
-        public async Task<IEnumerable<Product>> GetProducts()
+        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)] 
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return await _productService.GetProductsAsync();
+            var products = await _productService.GetProductsAsync();
+            if (!products.Any())
+            {
+                return NotFound("No products found");
+            }
+            return Ok(products);
         }
 
         /// <summary>
         /// Retrieves product by id
         /// </summary>
-        /// <param name="id">Product id</param>
+        /// <response code="200">Returns the requested product</response>
+        /// <response code="404">If no product is found with the provided id</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);
 
             if (product == null)
             {
-                return NotFound();
+                return NotFound($"Product with id {id} not found");
             }
 
-            return product;
+            return Ok(product);
         }
 
         /// <summary>
         /// Searches products by query
         /// </summary>
         /// <param name="query">Search query</param>
+        /// <response code="200">Returns the filtered products</response>
+        /// <response code="404">No products found matching the criteria</response>
         [HttpGet("search")]
-        public async Task<IEnumerable<Product>> SearchProducts([FromQuery] string query)
+        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<Product>>> SearchProducts([FromQuery] string query)
         {
-            return await _productService.SearchProductsAsync(query);
+            var filteredProducts = await _productService.SearchProductsAsync(query);
+            if (!filteredProducts.Any())
+            {
+                return NotFound($"No products found matching the query {query}");
+            }
+            return Ok(filteredProducts);
         }
 
         /// <summary>
@@ -57,10 +79,20 @@ namespace ProductMiddleware.Controllers
         /// <param name="category">Category</param>
         /// <param name="minPrice">Minimum price</param>
         /// <param name="maxPrice">Maximum price</param>
+        /// <response code="200">Returns the filtered products</response>
+        /// <response code="404">No products found matching the criteria</response>
         [HttpGet("filter")]
-        public async Task<IEnumerable<Product>> FilterProducts([FromQuery] string category, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice)
+        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<Product>>> FilterProducts([FromQuery] string category, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice)
         {
-            return await _productService.GetProductsByFilterAsync(category, minPrice, maxPrice);
+            var FilterProducts = await _productService.GetProductsByFilterAsync(category, minPrice, maxPrice);
+            if (!FilterProducts.Any())
+            {
+                return NotFound("No products found matching the query");
+            }
+            return Ok(FilterProducts);
         }
     }
 }
+
