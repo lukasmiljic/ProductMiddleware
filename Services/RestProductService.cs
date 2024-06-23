@@ -6,6 +6,7 @@ namespace ProductMiddleware.Services
     public class RestProductService : IProductService
     {
         private readonly HttpClient _httpClient;
+        private readonly string _baseUrl = "https://dummyjson.com/products";
 
         public RestProductService(HttpClient httpClient)
         {
@@ -14,7 +15,7 @@ namespace ProductMiddleware.Services
 
         public async Task<IEnumerable<Product>> GetProductsAsync()
         {
-            var response = await _httpClient.GetStringAsync("https://dummyjson.com/products");
+            var response = await _httpClient.GetStringAsync(_baseUrl);
             var productsResponse = JsonSerializer.Deserialize<ProductsResponse>(response);
             return productsResponse.Products;
         }
